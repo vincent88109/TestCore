@@ -1,0 +1,20 @@
+﻿@using AntDesign
+
+
+
+
+
+
+<Button type="primary" OnClick="(e)=>OnClick(e)">@_content</Button>
+
+
+
+
+@code
+{
+    private string _content = "Primay";
+    private void OnClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+    {
+        _content += "*";
+    }
+}

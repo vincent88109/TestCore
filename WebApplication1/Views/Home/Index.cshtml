@@ -1,0 +1,34 @@
+﻿@using WebApplication1.Components;
+
+@using AntDesign;
+
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<component type="typeof(HelloWorld)" render-mode="ServerPrerendered" />
+
+
+
+<script>
+        function ClickHttp() {
+            $.get("/home/ClickHttp", function (result) {
+                alert(result);
+            });
+        }
+</script>
+
+
+
+
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+        <button onclick="ClickHttp()">请求</button>
+
+
+    </div>

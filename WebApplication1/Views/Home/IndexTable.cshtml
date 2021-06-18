@@ -1,0 +1,300 @@
+﻿@{
+    ViewData["Title"] = "Sub Table ";
+}
+
+<!--jquery-->
+<script src="https://cdn.bootcss.com/jquery/3.6.0/jquery.min.js"></script>
+
+
+@*<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>*@
+
+
+
+<!--bootstrap-->
+<link href="https://cdn.bootcss.com/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+
+
+
+
+@*<script src="https://cdn.bootcss.com/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>*@
+<!--fontawesome-->
+<script src="https://cdn.bootcss.com/font-awesome/5.6.3/js/all.min.js"></script>
+
+
+
+<!--bootstrap-table-->
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+
+<!--bootstrap-table-lanuage-->
+@*<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table-locale-all.min.js"></script>*@
+
+<!--在客户端保存生成的导出文件-->
+@*<script src="https://cdn.bootcss.com/FileSaver.js/2014-11-29/FileSaver.min.js"></script>*@
+<script src="~/lib/FileSaver/FileSaver.min.js"></script>
+<!--以XLSX（Excel 2007+ XML格式）格式导出表（SheetJS）-->
+@*<script src="https://cdn.bootcss.com/xlsx/0.14.2/xlsx.core.min.js"></script>*@
+<script src="~/lib/js-xlsx/xlsx.core.min.js"></script>
+
+
+<script src="~/lib/jsPDF/jspdf.min.js"></script>
+<script src="~/lib/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+
+
+<!--以PNG格式导出表格-->
+<!--对于IE支持包括 html2canvas 之前的 es6-promise-->
+<script src="https://cdn.bootcss.com/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+<script src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+@*<script src="~/lib/es6-promise/es6-promise.auto.min.js"></script>
+    <script src="~/lib/html2canvas/html2canvas.min.js"></script>*@
+
+
+
+
+
+
+
+
+
+
+<!--bootstrap-table-export-->
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/toolbar/bootstrap-table-toolbar.js"></script>
+
+<!--无论期望的格式如何，最后都包含 tableexport.jquery.plugin（不是tableexport）-->
+@*<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>*@
+
+
+
+
+<style>
+    #toolbar {
+        margin: 0;
+    }
+</style>
+
+<div id="toolbar" class="select">
+    <select class="form-control">
+        <option value="">Export Basic</option>
+        <option value="all">Export All</option>
+        <option value="selected">Export Selected</option>
+    </select>
+</div>
+
+<table id="table"
+       data-show-export="true"
+       data-pagination="true"
+       data-side-pagination="server"
+       data-click-to-select="true"
+       data-toolbar="#toolbar"
+       data-show-toggle="true"
+       data-show-columns="true"
+       data-minimum-count-columns="2"
+       data-page-list="[10, 25, 50, 100, all]"
+       data-search="true"
+       data-toggle="table"
+       data-height="600"
+       data-detail-view="true"
+       data-detail-formatter="detailFormatter"
+       data-filter-control="true"
+       data-id-field="id"
+       data-url="https://examples.wenzhixin.net.cn/examples/bootstrap_table/data">
+</table>
+
+<script>
+    var $table = $('#table')
+
+    $(function () {
+        $('#toolbar').find('select').change(function () {
+            $table.bootstrapTable('destroy').bootstrapTable({
+                showPaginationSwitch: true,
+                pagination: true,
+                exportDataType: $(this).val(),
+                exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+                exportOptions: {
+                    ignoreColumn: [0, 1],  //忽略某一列的索引  
+                    fileName: '总台帐报表',  //文件名称设置  
+                    worksheetName: 'sheet1',  //表格工作区名称  
+                    tableName: '总台帐报表',
+                    excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+                    onMsoNumberFormat: DoOnMsoNumberFormat
+                },  
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        visible: $(this).val() === 'selected'
+                    },
+                    {
+                        field: 'id',
+                        title: 'ID',
+                        sortable: true
+                    }, {
+                        field: 'name',
+                        title: 'Item Name',
+                        sortable: true
+                    }, {
+                        field: 'price',
+                        title: 'Item Price',
+                        sortable: true
+                    }
+                ]
+            })
+        }).trigger('change')
+    })
+
+     function DoOnMsoNumberFormat(cell, row, col) {
+       var result = "";
+       if (row > 0 && col == 0)
+           result = "\\@@";
+       return result;
+   }
+
+    function detailFormatter(index, row, $detail) {
+
+        var html = []
+        html.push('<table>');
+        html.push('<tr>');
+        $.each(row, function (key, value) {
+            html.push('<td>' + key + '</td>')
+        })
+        html.push('</tr>');
+        html.push('<tr>');
+        $.each(row, function (key, value) {
+            html.push('<td>' + value + '</td>')
+        })
+        html.push('</tr>');
+
+        html.push('</table >');
+        return html.join('')
+
+        //var html = []
+        //$.each(row, function (key, value) {
+        //    html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+        //})
+        //return html.join('')
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*<div id="div1">
+
+        <table id="table1"
+               data-toggle="table"
+               data-detail-view="true"
+               data-url="data1.json"
+               data-show-export="true"
+               data-detail-formatter="detailFormatter"
+               data-height="460">
+            <thead>
+                <tr>
+                    <th data-field="id">ID</th>
+                    <th data-field="name">Item Name</th>
+                    <th data-field="price">Item Price</th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>*@
+
+
+
+
+
+
+
+
+@*<script>
+        var $table = $('#table1')
+
+        function buildTable($el, cells, rows) {
+            var i; var j; var row
+            var columns = []
+            var data = []
+
+            for (i = 0; i < cells; i++) {
+                columns.push({
+                    field: 'field' + i,
+                    title: 'Cell' + i,
+                    sortable: true
+                })
+            }
+            for (i = 0; i < rows; i++) {
+                row = {}
+                for (j = 0; j < cells; j++) {
+                    row['field' + j] = 'Row-' + i + '-' + j
+                }
+                data.push(row)
+            }
+            $el.bootstrapTable({
+                columns: columns,
+                data: data,
+                detailView: cells > 1,
+                onExpandRow: function (index, row, $detail) {
+                    /* eslint no-use-before-define: ["error", { "functions": false }]*/
+                    expandTable($detail, cells)
+                }
+            })
+        }
+
+
+
+
+
+
+        function expandTable($detail, cells) {
+            buildTable($detail.html('<table></table>').find('table'), cells, 1)
+        }
+
+        function detailFormatter(index, row, $detail) {
+
+            var html = []
+            html.push('<table>');
+            html.push('<tr>');
+            $.each(row, function (key, value) {
+                html.push('<td>' + key + '</td>')
+            })
+            html.push('</tr>');
+            html.push('<tr>');
+            $.each(row, function (key, value) {
+                html.push('<td>' + value + '</td>')
+            })
+            html.push('</tr>');
+
+            html.push('</table >');
+            return html.join('')
+
+            //var html = []
+            //$.each(row, function (key, value) {
+            //    html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+            //})
+            //return html.join('')
+        }
+        $(function () {
+            //buildTable($table, 8, 1)
+        })
+    </script>*@
+
+
+
+
+
