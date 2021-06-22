@@ -31,6 +31,15 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include="package-lock.json" />
+<<<<<<< HEAD
+=======
+    <Content Include="public\favicon.ico" />
+    <Content Include="public\index.html" />
+    <Content Include="public\logo192.png" />
+    <Content Include="public\logo512.png" />
+    <Content Include="public\manifest.json" />
+    <Content Include="public\robots.txt" />
+>>>>>>> 98f98a83382c764730bd64f1abc30cf2e1f419de
     <Content Include="package.json" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
